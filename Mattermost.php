@@ -27,7 +27,7 @@ class MattermostPlugin extends MantisPlugin
         $this->description = plugin_lang_get('description');
         $this->page        = 'config_page';
         $this->version     = '1.0';
-        $this->requires    = array('MantisCore' => '2.5.x');
+        $this->requires    = ['MantisCore' => '2.5.x'];
         $this->author      = 'AA\'LA Solutions';
         $this->contact     = 'info@aalasolutions.com';
         $this->url         = 'https://aalasolutions.com';
@@ -46,30 +46,22 @@ class MattermostPlugin extends MantisPlugin
     }
 
     public function config() {
-        return array(
-            'url_webhooks' => array(),
+        return [
+            'url_webhooks' => [],
             'url_webhook' => '',
             'bot_name' => 'mantis',
             'bot_icon' => '',
             'skip_bulk' => true,
             'link_names' => false,
-            'channels' => array(),
+            'channels' => [],
             'default_channel' => '#general',
-            'usernames' => array(),
-            'columns' => array(
-                'status',
-                'priority',
-                'handler_id',
-                'reporter_id',
-                'target_version',
-                'severity',
-                'description',
-            ),
-        );
+            'usernames' => [],
+            'columns' => ['status', 'priority', 'handler_id', 'reporter_id', 'target_version', 'severity', 'description'],
+        ];
     }
 
     public function hooks() {
-        return array(
+        return [
             'EVENT_REPORT_BUG' => 'bug_report',
             'EVENT_UPDATE_BUG' => 'bug_update',
             'EVENT_BUG_DELETED' => 'bug_deleted',
@@ -78,7 +70,7 @@ class MattermostPlugin extends MantisPlugin
             'EVENT_BUGNOTE_EDIT' => 'bugnote_add_edit',
             'EVENT_BUGNOTE_DELETED' => 'bugnote_deleted',
             'EVENT_BUGNOTE_ADD_FORM' => 'bugnote_add_form',
-        );
+        ];
     }
 
     public function bugnote_add_form($event, $bug_id) {
@@ -155,8 +147,8 @@ class MattermostPlugin extends MantisPlugin
     }
 
     public function get_text_attachment($text) {
-        $attachment             = array('color' => '#3AA3E3', 'mrkdwn_in' => array('pretext', 'text', 'fields'));
-        $attachment['fallback'] = text . "\n";
+        $attachment = ['color' => '#3AA3E3', 'mrkdwn_in' => ['pretext', 'text', 'fields']];
+        $attachment['fallback'] = \TEXT."\n";
         $attachment['text']     = $text;
         return $attachment;
     }
@@ -182,11 +174,12 @@ class MattermostPlugin extends MantisPlugin
 
     public function format_text($bug, $text) {
         $t = string_display_line_links($this->bbcode_to_mattermost($text));
-        return strip_tags(html_entity_decode($t));
+
+        return strip_tags(html_entity_decode((string) $t));
     }
 
     public function get_attachment($bug) {
-        $attachment = array('fallback' => '', 'color' => '#3AA3E3', 'mrkdwn_in' => array('pretext', 'text', 'fields'));
+        $attachment = ['fallback' => '', 'color' => '#3AA3E3', 'mrkdwn_in' => ['pretext', 'text', 'fields']];
         $t_columns  = (array)plugin_config_get('columns');
         foreach ($t_columns as $t_column) {
             $title = column_get_title($t_column);
@@ -194,11 +187,7 @@ class MattermostPlugin extends MantisPlugin
 
             if ($title && $value) {
                 $attachment['fallback'] .= $title . ': ' . $value . "\n";
-                $attachment['fields'][] = array(
-                    'title' => $title,
-                    'value' => $value,
-                    'short' => !column_is_extended($t_column),
-                );
+                $attachment['fields'][] = ['title' => $title, 'value' => $value, 'short' => !column_is_extended($t_column)];
             }
         }
         return $attachment;
@@ -206,102 +195,42 @@ class MattermostPlugin extends MantisPlugin
 
     public function format_value($bug, $field_name) {
         $self   = $this;
-        $values = array(
-            'id' => function ($bug) {
-                return sprintf('<%s|%s>', string_get_bug_view_url_with_fqdn($bug->id), $bug->id);
-            },
-            'project_id' => function ($bug) {
-                return project_get_name($bug->project_id);
-            },
-            'reporter_id' => function ($bug) {
-                return $this->get_user_name($bug->reporter_id);
-            },
-            'handler_id' => function ($bug) {
-                return empty($bug->handler_id) ? plugin_lang_get('no_user') : $this->get_user_name($bug->handler_id);
-            },
-            'duplicate_id' => function ($bug) {
-                return sprintf('<%s|%s>', string_get_bug_view_url_with_fqdn($bug->duplicate_id), $bug->duplicate_id);
-            },
-            'priority' => function ($bug) {
-                return get_enum_element('priority', $bug->priority);
-            },
-            'severity' => function ($bug) {
-                return get_enum_element('severity', $bug->severity);
-            },
-            'reproducibility' => function ($bug) {
-                return get_enum_element('reproducibility', $bug->reproducibility);
-            },
-            'status' => function ($bug) {
-                return get_enum_element('status', $bug->status);
-            },
-            'resolution' => function ($bug) {
-                return get_enum_element('resolution', $bug->resolution);
-            },
-            'projection' => function ($bug) {
-                return get_enum_element('projection', $bug->projection);
-            },
-            'category_id' => function ($bug) {
-                return category_full_name($bug->category_id, false);
-            },
-            'eta' => function ($bug) {
-                return get_enum_element('eta', $bug->eta);
-            },
-            'view_state' => function ($bug) {
-                return $bug->view_state == VS_PRIVATE ? lang_get('private') : lang_get('public');
-            },
-            'sponsorship_total' => function ($bug) {
-                return sponsorship_format_amount($bug->sponsorship_total);
-            },
-            'os' => function ($bug) {
-                return $bug->os;
-            },
-            'os_build' => function ($bug) {
-                return $bug->os_build;
-            },
-            'platform' => function ($bug) {
-                return $bug->platform;
-            },
-            'version' => function ($bug) {
-                return $bug->version;
-            },
-            'fixed_in_version' => function ($bug) {
-                return $bug->fixed_in_version;
-            },
-            'target_version' => function ($bug) {
-                return $bug->target_version;
-            },
-            'build' => function ($bug) {
-                return $bug->build;
-            },
-            'summary' => function ($bug) use ($self) {
-                return $self->format_summary($bug);
-            },
-            'last_updated' => function ($bug) {
-                return date(config_get('short_date_format'), $bug->last_updated);
-            },
-            'date_submitted' => function ($bug) {
-                return date(config_get('short_date_format'), $bug->date_submitted);
-            },
-            'due_date' => function ($bug) {
-                return date(config_get('short_date_format'), $bug->due_date);
-            },
-            'description' => function ($bug) use ($self) {
-                return $self->format_text($bug, $bug->description);
-            },
-            'steps_to_reproduce' => function ($bug) use ($self) {
-                return $self->format_text($bug, $bug->steps_to_reproduce);
-            },
-            'additional_information' => function ($bug) use ($self) {
-                return $self->format_text($bug, $bug->additional_information);
-            },
-        );
+        $values = [
+            'id' => fn($bug) => sprintf('<%s|%s>', string_get_bug_view_url_with_fqdn($bug->id), $bug->id),
+            'project_id' => fn($bug) => project_get_name($bug->project_id),
+            'reporter_id' => fn($bug) => $this->get_user_name($bug->reporter_id),
+            'handler_id' => fn($bug) => empty($bug->handler_id) ? plugin_lang_get('no_user') : $this->get_user_name($bug->handler_id),
+            'duplicate_id' => fn($bug) => sprintf('<%s|%s>', string_get_bug_view_url_with_fqdn($bug->duplicate_id), $bug->duplicate_id),
+            'priority' => fn($bug) => get_enum_element('priority', $bug->priority),
+            'severity' => fn($bug) => get_enum_element('severity', $bug->severity),
+            'reproducibility' => fn($bug) => get_enum_element('reproducibility', $bug->reproducibility),
+            'status' => fn($bug) => get_enum_element('status', $bug->status),
+            'resolution' => fn($bug) => get_enum_element('resolution', $bug->resolution),
+            'projection' => fn($bug) => get_enum_element('projection', $bug->projection),
+            'category_id' => fn($bug) => category_full_name($bug->category_id, false),
+            'eta' => fn($bug) => get_enum_element('eta', $bug->eta),
+            'view_state' => fn($bug) => $bug->view_state == VS_PRIVATE ? lang_get('private') : lang_get('public'),
+            'sponsorship_total' => fn($bug) => sponsorship_format_amount($bug->sponsorship_total),
+            'os' => fn($bug) => $bug->os,
+            'os_build' => fn($bug) => $bug->os_build,
+            'platform' => fn($bug) => $bug->platform,
+            'version' => fn($bug) => $bug->version,
+            'fixed_in_version' => fn($bug) => $bug->fixed_in_version,
+            'target_version' => fn($bug) => $bug->target_version,
+            'build' => fn($bug) => $bug->build,
+            'summary' => fn($bug) => $self->format_summary($bug),
+            'last_updated' => fn($bug) => date(config_get('short_date_format'), $bug->last_updated),
+            'date_submitted' => fn($bug) => date(config_get('short_date_format'), $bug->date_submitted),
+            'due_date' => fn($bug) => date(config_get('short_date_format'), $bug->due_date),
+            'description' => fn($bug) => $self->format_text($bug, $bug->description),
+            'steps_to_reproduce' => fn($bug) => $self->format_text($bug, $bug->steps_to_reproduce),
+            'additional_information' => fn($bug) => $self->format_text($bug, $bug->additional_information),
+        ];
         // Discover custom fields.
         $t_related_custom_field_ids = custom_field_get_linked_ids($bug->project_id);
         foreach ($t_related_custom_field_ids as $t_id) {
             $t_def                              = custom_field_get_definition($t_id);
-            $values['custom_' . $t_def['name']] = function ($bug) use ($t_id) {
-                return custom_field_get_value($t_id, $bug->id);
-            };
+            $values['custom_'.$t_def['name']] = fn($bug) => custom_field_get_value($t_id, $bug->id);
         }
         if (isset($values[$field_name])) {
             $func = $values[$field_name];
@@ -332,16 +261,16 @@ class MattermostPlugin extends MantisPlugin
             return;
         }
 
-        $url = sprintf('%s', trim($webhook));
+        $url = sprintf('%s', trim((string) $webhook));
 
-        $payload = array(
+        $payload = [
             'channel' => $channel,
             'username' => plugin_config_get('bot_name'),
-            'text' =>  $msg,
+            'text' => $msg,
             'link_names' => plugin_config_get('link_names'),
-        );
+        ];
 
-        $bot_icon = trim(plugin_config_get('bot_icon'));
+        $bot_icon = trim((string) plugin_config_get('bot_icon'));
 
         if (empty($bot_icon)) {
             $payload['icon_url'] = 'https://github.com/aalasolutions/MantisBT-Mattermost/blob/master/mantis_logo.png?raw=true';
@@ -352,13 +281,13 @@ class MattermostPlugin extends MantisPlugin
         }
 
         if ($attachment) {
-            $payload['attachments'] = array($attachment);
+            $payload['attachments'] = [$attachment];
         }
 
         $data = json_encode($payload);
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -374,7 +303,7 @@ class MattermostPlugin extends MantisPlugin
     }
 
     public function bbcode_to_mattermost($bbtext) {
-        $bbtags = array(
+        $bbtags = [
             '[b]' => '*',
             '[/b]' => '* ',
             '[i]' => '_',
@@ -402,11 +331,11 @@ class MattermostPlugin extends MantisPlugin
             '[/center]' => '',
             '[justify]' => '',
             '[/justify]' => '',
-        );
+        ];
 
-        $bbtext = str_ireplace(array_keys($bbtags), array_values($bbtags), $bbtext);
+        $bbtext = str_ireplace(array_keys($bbtags), array_values($bbtags), (string) $bbtext);
 
-        $bbextended = array(
+        $bbextended = [
             "/\[code(.*?)\](.*?)\[\/code\]/is" => "```$2```",
             "/\[color(.*?)\](.*?)\[\/color\]/is" => "$2",
             "/\[size=(.*?)\](.*?)\[\/size\]/is" => "$2",
@@ -415,7 +344,7 @@ class MattermostPlugin extends MantisPlugin
             "/\[url=(.*?)\](.*?)\[\/url\]/i" => "<$1|$2>",
             "/\[email=(.*?)\](.*?)\[\/email\]/i" => "<mailto:$1|$2>",
             "/\[img\]([^[]*)\[\/img\]/i" => "<$1>",
-        );
+        ];
 
         foreach ($bbextended as $match => $replacement) {
             $bbtext = preg_replace($match, $replacement, $bbtext);
