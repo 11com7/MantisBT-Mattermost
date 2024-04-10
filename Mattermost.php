@@ -30,7 +30,7 @@ class MattermostPlugin extends MantisPlugin
         $this->requires    = array('MantisCore' => '2.5.x');
         $this->author      = 'AA\'LA Solutions';
         $this->contact     = 'info@aalasolutions.com';
-        $this->url         = 'http://aalasolutions.com';
+        $this->url         = 'https://aalasolutions.com';
     }
 
     public function install() {
