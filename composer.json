@@ -1,0 +1,17 @@
+{
+    "name": "aalasolutions-zz/mantisbt-mattermost",
+    "description": "A MantisBT plugin to send bug updates to Mattermost channels.",
+    "minimum-stability": "stable",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Aamir Mahmood"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": ">=8.1.0"
+    }
+}
