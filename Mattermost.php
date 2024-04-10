@@ -34,7 +34,7 @@ class MattermostPlugin extends MantisPlugin
     }
 
     public function install() {
-        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+        if (version_compare(PHP_VERSION, '8.1.0', '<')) {
             plugin_error(ERROR_PHP_VERSION, ERROR);
             return false;
         }
