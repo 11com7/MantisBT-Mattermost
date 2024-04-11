@@ -43,6 +43,6 @@ $s_plugin_Mattermost_unknown_field    = '(unbekanntes Feld "%s")';
 $s_plugin_Mattermost_skip             = 'Überspringe Mattermost-Benachrichtigung';
 $s_plugin_Mattermost_action_update    = 'Aktualisiere';
 
-$MANTIS_ERROR['plugin_Mattermost_ERROR_NO_CURL']     = 'Das Mattermost-Plugin benötigt die PHP-cURL-Extension (http://php.net/curl)';
+$MANTIS_ERROR['plugin_Mattermost_ERROR_NO_CURL']     = 'Das Mattermost-Plugin benötigt die PHP-cURL-Extension (https://php.net/curl)';
 $MANTIS_ERROR['plugin_Mattermost_ERROR_PHP_VERSION'] = 'Das Mattermost-Plugin benötigt PHP 8.1.0 oder höher';
 $MANTIS_ERROR['plugin_Mattermost_ERROR_CURL']        = 'Es gab Probleme beim Mattermost-Aufruf. Prüfe deine Webhook-URL.  Stelle sicher, dass keine ungewöhnlichen Zeichen im Bot-Namen oder -Icon-Einstellungen enthalten sind. Mehr Details findest du im folgenden Abschnitt.';

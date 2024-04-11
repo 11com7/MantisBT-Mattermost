@@ -46,3 +46,4 @@ $s_plugin_Mattermost_action_update    = 'Update';
 $MANTIS_ERROR['plugin_Mattermost_ERROR_NO_CURL']     = 'The Mattermost plugin requires the cURL PHP extension (http://php.net/curl)';
 $MANTIS_ERROR['plugin_Mattermost_ERROR_PHP_VERSION'] = 'The Mattermost plugin requires PHP 5.3.0 or higher';
 $MANTIS_ERROR['plugin_Mattermost_ERROR_CURL']        = 'The request to Mattermost didn\'t go through.  Check your webhook URL.  Also make sure there are no unusual characters in your bot name or bot icon settings.  Further details may be printed below this box.';
+$MANTIS_ERROR['plugin_Mattermost_ERROR_NO_CURL']     = 'The Mattermost plugin requires the cURL PHP extension (https://php.net/curl)';
