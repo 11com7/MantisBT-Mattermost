@@ -4,7 +4,10 @@ MantisBT-Mattermost
 A [MantisBT](http://www.mantisbt.org/) plugin to send bug updates to [Mattermost](https://about.mattermost.com/) 
 channels.
 
-It is only for Mantis 2.0.x, not backward compatible.
++ It is only for Mantis 2.0.x, not backward compatible.
++ This fork has minimal changes 
+  + German translation added
+  + Fixed *Unknown named parameter $files* error for PHP >= 8.0
 
 
 # Setup
